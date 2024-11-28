@@ -77,7 +77,7 @@ const validImproveValues = [
           Country,
           Language,
           Address,
-          userProfileImage: uploadedImagePath.url // Assuming userProfileImage is to be stored in UserProfile model
+          userProfileImage: uploadedImagePath.secure_url // Assuming userProfileImage is to be stored in UserProfile model
         });
       
         console.log("User profile created:", userProfile);

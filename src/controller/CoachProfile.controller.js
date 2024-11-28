@@ -302,7 +302,9 @@ export const UpdateCoachProfile = asyncHandler(async (req, res) => {
   
   let CoachCoverImage
  try {
-   CoachCoverImage = uploadOnCloudinary(CoachCoverImagepath)
+   CoachCoverImage = await uploadOnCloudinary(CoachCoverImagepath)
+  //  console.log( { URL: CoachCoverImage.url});
+
    console.log("CoachCoverImage uploaded successfully"); 
  } catch (error) {
    throw new ApiError(500, "Failed to upload image on Cloudinary", err.message);
@@ -310,11 +312,14 @@ export const UpdateCoachProfile = asyncHandler(async (req, res) => {
  
  //coach  CoachProifleIamge upload to server or cloudinary
  const CoachProfileImagepath = req.files?.CoachProfileImage[0]?.path;
-  console.log(CoachProfileImagepath);
+  // console.log({ url : CoachProfileImagepath.url});
  
  let CoachProifleImage
  try {
-   CoachProifleImage = uploadOnCloudinary(CoachProfileImagepath)
+   CoachProifleImage = await uploadOnCloudinary(CoachProfileImagepath)
+   
+  //  console.log( { URL:CoachProifleImage});
+   
    console.log("CoachProifleImage uploaded successfully"); 
    
  } catch (error) {
@@ -331,8 +336,8 @@ export const UpdateCoachProfile = asyncHandler(async (req, res) => {
       YoutubeUrl,
       FacebookUrl,
       biography,
-      CoachCoverImage: CoachCoverImage.secure_url,
-      CoachProifleImage: CoachProifleImage.secure_url,
+      CoachCoverImage: CoachCoverImage.secure_url ? CoachCoverImage.secure_url : "something wrong",
+      CoachProfileImage: CoachProifleImage.secure_url  ? CoachProifleImage.secure_url : "something wrong",
       InstagramUrl
   },
   { new: true } // To return the updated profile

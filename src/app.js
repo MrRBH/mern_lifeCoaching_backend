@@ -5,6 +5,7 @@ import userprofileRouter from './routes/userprofile.routes.js';
 import QuickAskrouter from './routes/quickAsk.routes.js';
 import coachqualificaonRouter from './routes/CoachQualification.routes.js';
 import  coachProfileRouter from './routes/Coachprofile.routes.js';
+import blogRouter from './routes/blog.routes.js';
 import passport from 'passport';
 import "./../src/utils/passport.js";
 import session from "express-session";
@@ -45,6 +46,7 @@ app.use("/api/v1/userprofile", userprofileRouter); // for user profile-related r
 app.use("/api/v1/Quick", QuickAskrouter); // for user profile-related routes
 app.use("/api/v1/coach", coachqualificaonRouter); // for coach profile-related routes
 app.use("/api/v1/coachProfile", coachProfileRouter); // for coach profile-related routes
+app.use("/api/v1/createBlog" , blogRouter)
 
 
 // Basic error handling
