@@ -1,17 +1,12 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { categoriesAndsubcategory } from "../utils/categoryAndsubcategory.js";
 import { uploadOnCloudinary } from "../utils/cloudniary.js";
-import Blog from "../models/Blog.model.js"; // Assuming Blog model is imported
+import Blog from "../models/Blog.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 
 const Blogpost = asyncHandler(async (req, res) => {
-    const {
-        Title,
-        Description,
-        categories,
-        subcategory,
-    } = req.body;
+    const { Title, Description, categories, subcategory } = req.body;
 
     console.log(req.body);
 
@@ -19,23 +14,22 @@ const Blogpost = asyncHandler(async (req, res) => {
     if (!Title || !Description || !categories || !subcategory) {
         throw new ApiError(400, "All fields are required");
     }
- 
+
     // Category and Subcategory Validation
     if (!Object.keys(categoriesAndsubcategory).includes(categories)) {
-    console.log({  CAT :categories});
-
+        console.log({ CAT: categories });
         throw new ApiError(400, "Invalid category");
     }
-    // console.log({ CAT :  categoriesAndsubcategory});
-    
 
-    if (typeof subcategory === '[string]') {
-        subcategory = [subcategory];
-    }
+    // Ensure subcategory is an array if it's a single value
+    let subcategories = Array.isArray(subcategory) ? subcategory : [subcategory];
 
-    let validSubcategories = categoriesAndsubcategory[categories].filter((item) => subcategory.includes(item));
+    let validSubcategories = categoriesAndsubcategory[categories];
 
-    if (validSubcategories.length !== subcategory.length) {
+    // Check if all provided subcategories are valid
+    let isValid = subcategories.every((item) => validSubcategories.includes(item));
+
+    if (!isValid) {
         throw new ApiError(400, "Invalid subcategory");
     }
 
@@ -46,25 +40,25 @@ const Blogpost = asyncHandler(async (req, res) => {
     }
 
     // Blog Image Upload
-    const blogImagePath = req.files?.[0]?.path;
+    const blogImagePath = req.files?.BlogImage[0]?.path;
+    console.log({ B: blogImagePath });
     if (!blogImagePath) {
         throw new ApiError(400, "Blog image is required");
     }
-    console.log(blogImagePath);
-    
+   
 
     let blogImageFile;
     try {
         blogImageFile = await uploadOnCloudinary(blogImagePath);
-        console.log("Uploaded successfully blogImage on Cloudinary ...");
+        console.log({"Uploaded successfully blogImage on Cloudinary ..." : blogImageFile.secure_url});
     } catch (error) {
         throw new ApiError(500, "Failed to upload blog image on Cloudinary", error.message);
     }
 
     // Thumbnail Image Upload
-    const thumbnailPath = req.files?.[0]?.path;
-    console.log(thumbnailPath);
-    
+    const thumbnailPath = req.files?.thumbnail[0]?.path;
+    console.log({ T: thumbnailPath });
+
     if (!thumbnailPath) {
         throw new ApiError(400, "Thumbnail image is required");
     }
@@ -72,7 +66,7 @@ const Blogpost = asyncHandler(async (req, res) => {
     let thumbnailFile;
     try {
         thumbnailFile = await uploadOnCloudinary(thumbnailPath);
-        console.log("Uploaded successfully thumbnail on Cloudinary ...");
+        console.log({"Uploaded successfully thumbnail on Cloudinary ..." : thumbnailFile.secure_url});
     } catch (error) {
         throw new ApiError(500, "Failed to upload thumbnail on Cloudinary", error.message);
     }
@@ -82,12 +76,14 @@ const Blogpost = asyncHandler(async (req, res) => {
         Title,
         Description,
         categories,
-        subcategory,
-        blogImage: blogImageFile.secure_url,
-        thumbnail: thumbnailFile.secure_url
+        subcategory: subcategories, // Save as an array
+        BlogImage: blogImageFile.secure_url,
+        thumbnail: thumbnailFile.secure_url,
+        userId: userid // Ensure the user ID is saved
     });
+    console.log(newBlog);
 
-    res.status(201).json(new ApiResponse(201 ,newBlog ,"Blog Created successfully")); 
+    res.status(201).json(new ApiResponse(201, newBlog, "Blog Created successfully"));
 });
 
 export default Blogpost;

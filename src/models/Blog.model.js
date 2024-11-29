@@ -18,11 +18,11 @@ subcategory :{
 },
 BlogImage :{
     type : String,
-    required : true
+    // required : true
 },
 thumbnail :{
     type : String,
-    required : true
+    // required : true
 }, 
 userId:{ 
     type: mongoose.Schema.Types.ObjectId,
