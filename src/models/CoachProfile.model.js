@@ -230,7 +230,8 @@ import mongoose, { Schema } from "mongoose";
   CoachQualificationId : {
     type : Schema.Types.ObjectId,
     ref : 'CoachQualification'
-  }
+  },
+
 
  })
 const CoachProfile = mongoose.model("CoachProfile", CoachProfileSchema)

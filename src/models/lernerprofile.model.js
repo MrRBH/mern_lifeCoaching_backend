@@ -28,7 +28,6 @@ const userProfileSchema = new Schema({
     Address : {
         type: String,
     },
-    
     Language :{
         type: [String],
     },
@@ -39,6 +38,7 @@ const userProfileSchema = new Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
   }
+  
   });
 
   const UserProfile = mongoose.model("UserProfile", userProfileSchema);
