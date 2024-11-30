@@ -1,6 +1,6 @@
-import { Schema } from "mongoose";
+import { mongoose, Schema } from "mongoose";
 
- const CoachAvalibilitySchema =  Schema({
+ const CoachAvailabilitySchema =  Schema({
      DayOfWeek : {
         type : [String],
      },
@@ -38,5 +38,5 @@ import { Schema } from "mongoose";
 
  })
 
- const CoachAvailability = mongoose.model('CoachAvailability',CoachAvalibilitySchema)
+ const CoachAvailability = mongoose.model('CoachAvailability',CoachAvailabilitySchema)
  export default CoachAvailability;
