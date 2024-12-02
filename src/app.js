@@ -1,11 +1,12 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.routes.js';
-import userprofileRouter from './routes/userprofile.routes.js';
+import lernerProfileRouter from './routes/lernerprofile.routes.js';
 import QuickAskrouter from './routes/quickAsk.routes.js';
 import coachqualificaonRouter from './routes/CoachQualification.routes.js';
 import  coachProfileRouter from './routes/Coachprofile.routes.js';
 import blogRouter from './routes/blog.routes.js';
+import HabitRouter from './routes/Habits.routes.js';
 import passport from 'passport';
 import "./../src/utils/passport.js";
 import session from "express-session";
@@ -42,11 +43,12 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/v1/user", userRouter);           // for user-related routes
-app.use("/api/v1/userprofile", userprofileRouter); // for user profile-related routes
+app.use("/api/v1/lernerprofile", lernerProfileRouter); // for user profile-related routes
 app.use("/api/v1/Quick", QuickAskrouter); // for user profile-related routes
 app.use("/api/v1/coach", coachqualificaonRouter); // for coach profile-related routes
 app.use("/api/v1/coachProfile", coachProfileRouter); // for coach profile-related routes
 app.use("/api/v1/createBlog" , blogRouter)
+app.use("/api/v1/createHabit" , HabitRouter)
 
 
 // Basic error handling

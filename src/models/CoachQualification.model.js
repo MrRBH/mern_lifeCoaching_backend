@@ -23,7 +23,7 @@ import mongoose, { Schema } from "mongoose";
   },
   
 
-})
+},{timestamps : true})
 const CoachQualification = mongoose.model('CoachQualification',CoachQualificationSchema)
 
 export default CoachQualification;

@@ -28,15 +28,15 @@ import { mongoose, Schema } from "mongoose";
         ref : 'User'
      },
      CoachProfileId : {
-        type : Schema.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'CoachProfile'
      },
      CoachQualificationId : {
-        type : Schema.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'CoachQualification'
      }
 
- })
+ },{timestamps : true})
 
  const CoachAvailability = mongoose.model('CoachAvailability',CoachAvailabilitySchema)
  export default CoachAvailability;

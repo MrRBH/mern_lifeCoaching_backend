@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const userProfileSchema = new Schema({
+const LernerProfileSchema = new Schema({
     improve: {
       type: [String],
       enum: [
@@ -31,17 +31,17 @@ const userProfileSchema = new Schema({
     Language :{
         type: [String],
     },
-    userProfileImage : {
-        type: String,
+    lernerprofileImage : {
+        type: String, // cloudinary url 
     } ,
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
   }
   
-  });
+  } , {timestamps : true});
 
-  const UserProfile = mongoose.model("UserProfile", userProfileSchema);
+  const LernerProfile = mongoose.model("LernerProfile", LernerProfileSchema);
 
 
-export default UserProfile;
+export default LernerProfile;

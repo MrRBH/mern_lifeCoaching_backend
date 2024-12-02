@@ -1,4 +1,4 @@
-import UserProfile from "../models/lernerprofile.model.js";
+import LernerProfile from "../models/lernerprofile.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -18,29 +18,33 @@ const validImproveValues = [
     "How you speak to yourself"
   ];
   
-  const userProfile = asyncHandler(async (req, res) => {
-    try {
+  const lernerProfile = asyncHandler(async (req, res) => {
+  
         let { improve, name, Country, Language, Address } = req.body;
+      console.log(req.body);
       
           
+        // if (!Array.isArray(improve)) {
+         
+        //   } else {
+        //     // If it's an array, clean up each value
+        //     improve = improve.map(val => val.trim().replace(/^"|"$/g, ''));  // Trim and remove quotes
+        //   }
+
         if (!Array.isArray(improve)) {
-            if (typeof improve === 'string') {
-              improve = improve.split(',').map(val => val.trim().replace(/^"|"$/g, ''));  // Trim and remove quotes
-            } else {
-              throw new ApiError(400, "'improve' must be an array of strings.");
-            }
-          } else {
-            // If it's an array, clean up each value
-            improve = improve.map(val => val.trim().replace(/^"|"$/g, ''));  // Trim and remove quotes
-          }
+          throw new ApiError(400, "improve must be arrays of strings");
+      }
+          if (typeof improve === 'string') {
+            improve = improve.split(',').map(val => val.trim().replace(/^"|"$/g, ''));  // Trim and remove quotes
+          } 
          
       
         // Validate that all values in the improve array are valid
-        const invalidValues = improve.filter(val => !validImproveValues.includes(val.trim()));
+        // const invalidValues = improve.filter(val => !validImproveValues.includes(val.trim()));
       
-        if (invalidValues.length > 0) {
-          throw new ApiError(400, `Invalid values in improve array: ${invalidValues.join(', ')}`);
-        }
+        // if (invalidValues.length > 0) {
+        //   throw new ApiError(400, `Invalid values in improve array: ${invalidValues.join(', ')}`);
+        // }
       
 
       
@@ -53,12 +57,16 @@ const validImproveValues = [
         if (!userId) {
           throw new ApiError(401, "Unauthorized user");
         }
+        console.log(userId);
+        
       
         // Handle image path and upload
         const profileImagePath = req.file?.path;
         if (!profileImagePath) {
           throw new ApiError(400, "Image field is required.");
         }
+        console.log(profileImagePath);
+        
       
         // Upload image to Cloudinary
         let uploadedImagePath;
@@ -70,24 +78,21 @@ const validImproveValues = [
         }
       
  
-        const userProfile = await UserProfile.create({
+        const userlernerProfile = await LernerProfile.create({
           improve,
           name,
           owner:userId,
           Country,
           Language,
           Address,
-          userProfileImage: uploadedImagePath.secure_url // Assuming userProfileImage is to be stored in UserProfile model
+          lernerprofileImage: uploadedImagePath.secure_url 
         });
       
-        console.log("User profile created:", userProfile);
+        console.log("User profile created:", userlernerProfile);
       
    
-        res.status(201).json(new ApiResponse(201, userProfile, "Profile created successfully"));
-    } catch (error) {
-        throw new ApiError(500,"Couldn't create profile", error);
-    }
-  });
+        res.status(201).json(new ApiResponse(201, userlernerProfile, "Profile created successfully"));
+      })
   export const EditProfile = asyncHandler(async (req, res) => {
     const { name, Address, Language, Country } = req.body;
   
@@ -102,10 +107,12 @@ const validImproveValues = [
     }
   
     // Get the profile image path from the uploaded file
-    let profileImagePath = req.file?.path;
+    let profileImagePath = req.file?.lernerprofileImage.path;
     if (!profileImagePath) {
       throw new ApiError(400, "Image field is required.");
     }
+    console.log(profileImagePath);
+    
   
     let uploadedImagePath;
     try {
@@ -116,18 +123,18 @@ const validImproveValues = [
     }
   
     // Update the user profile in the database
-    const userProfile = await UserProfile.findOneAndUpdate(
+    const userlernerProfile = await LernerProfile.findOneAndUpdate(
       { owner: userId }, // Use user ID to find the correct user profile
-      { name, Address, Language, Country, userProfileImage: uploadedImagePath.url }, // Fields to update
+      { name, Address, Language, Country, lernerprofileImage: uploadedImagePath.url }, // Fields to update
       { new: true } // Return the updated profile
     );
   
-    if (!userProfile) {
+    if (!userlernerProfile) {
       throw new ApiError(404, "No profile found for this user");
     }
   
     // Send the response with the updated profile
-    res.status(200).json(new ApiResponse(200, userProfile, "Profile updated successfully"));
+    res.status(200).json(new ApiResponse(200, userlernerProfile, "Profile updated successfully"));
   });
   
-export default userProfile;
+export default lernerProfile;

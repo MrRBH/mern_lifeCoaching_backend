@@ -17,11 +17,11 @@ subcategory :{
     required : true
 },
 BlogImage :{
-    type : String,
+    type : String, // cloudinary link attach here
     // required : true
 },
 thumbnail :{
-    type : String,
+    type : String, // cloudinary link attach here
     // required : true
 }, 
 userId:{ 
@@ -30,7 +30,7 @@ userId:{
 }
 
 
-})
+},{timestamps : true})
 
 const Blog = mongoose.model('Blog',BlogSchema)
 

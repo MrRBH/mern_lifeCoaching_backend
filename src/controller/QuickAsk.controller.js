@@ -1,3 +1,4 @@
+import LernerProfile from "../models/lernerprofile.model.js";
 import QuickAsk from "../models/QuickAsk.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -37,9 +38,17 @@ export const Quickask = asyncHandler(async (req, res) => {
     // Trim and validate again
     AwakeQuestions = AwakeQuestions.map((val) => val.trim());
     SleepQuestions = SleepQuestions.map((val) => val.trim());
+    const lernerprofileId = await LernerProfile.findOne({owner : userId})
+    if (!lernerprofileId) {
+        throw new ApiError(404, "LernerProfile not found");
+    }
+    console.log(lernerprofileId._id);
+    
 
     // Create new QuickAsk document
     const newQuickAsk = await QuickAsk.create({
+        userid: userId,
+        lernerprofileId : lernerprofileId._id,
         AwakeQuestions,
         SleepQuestions,
     });

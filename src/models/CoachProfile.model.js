@@ -233,7 +233,7 @@ import mongoose, { Schema } from "mongoose";
   },
 
 
- })
+ },{timestamps : true})
 const CoachProfile = mongoose.model("CoachProfile", CoachProfileSchema)
 
 export default CoachProfile;

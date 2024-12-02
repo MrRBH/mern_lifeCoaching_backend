@@ -26,8 +26,17 @@ const QuickAskSchema = new Schema({
             "Most of the time",
             "All the time",
         ]
+    },
+    userid :{
+        type:Schema.Types.ObjectId,
+        ref : 'User'
+    },
+    lernerprofileId :{
+
+        type:Schema.Types.ObjectId,
+        ref : 'LernerProfile'
     }
-})
+} ,{timestamps : true})
 const QuickAsk = mongoose.model('QuickAsk',QuickAskSchema)
 
 export default QuickAsk
