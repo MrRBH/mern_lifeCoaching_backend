@@ -2,6 +2,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import CoachAvailability from "../models/CoachAavalibility.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import CoachQualification from "../models/CoachQualification.model.js";
+import CoachProfile from "../models/CoachProfile.model.js";
 
 export const coachAvailability = asyncHandler(async (req,res) => {
     let {
@@ -55,6 +57,18 @@ export const coachAvailability = asyncHandler(async (req,res) => {
         throw new ApiError(401,"Unauthorized user");
     }
 
+    const CoachQualificationId =  await CoachQualification.findOne({userid : userId})
+    if (!CoachQualificationId) {
+        throw new ApiError(404, "Coach qualification not found");
+    }
+    console.log(CoachQualificationId._id);
+    
+ 
+    const coachprofileId  = await CoachProfile.findOne({userid :userId })
+    if (!coachprofileId) {
+        throw new ApiError(404, "Coach profile not found");
+    }
+    console.log(coachprofileId._id);
 
     // Create new availability
     const newAvailability = await CoachAvailability.create({
@@ -65,7 +79,11 @@ export const coachAvailability = asyncHandler(async (req,res) => {
         FifteenMinutesPrice,
         ThirteenthMinutesPrice,
         userid:userId,
+        CoachProfileId : coachprofileId._id,
+        CoachQualificationId : CoachQualificationId._id,
     });
+    console.log(newAvailability);
+    
     res.json(new ApiResponse(201 , newAvailability, "Availability created successfully"))
 })
 

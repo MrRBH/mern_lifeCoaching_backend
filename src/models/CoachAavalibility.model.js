@@ -28,11 +28,11 @@ import { mongoose, Schema } from "mongoose";
         ref : 'User'
      },
      CoachProfileId : {
-        type : mongoose.Schema.Types.ObjectId,
+        type : Schema.Types.ObjectId,
         ref : 'CoachProfile'
      },
      CoachQualificationId : {
-        type : mongoose.Schema.Types.ObjectId,
+        type : Schema.Types.ObjectId,
         ref : 'CoachQualification'
      }
 
