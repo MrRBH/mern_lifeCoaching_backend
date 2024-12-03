@@ -4,6 +4,8 @@ import { uploadOnCloudinary } from "../utils/cloudniary.js";
 import Blog from "../models/Blog.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
+import CoachQualification from "../models/CoachQualification.model.js";
+import CoachProfile from "../models/CoachProfile.model.js";
 
 const Blogpost = asyncHandler(async (req, res) => {
     const { Title, Description, categories, subcategory } = req.body;
@@ -38,6 +40,16 @@ const Blogpost = asyncHandler(async (req, res) => {
     if (!userid) {
         throw new ApiError(401, "Unauthorized user");
     }
+    const coachqualificationId = await CoachQualification.findOne({ userid: userid})
+    if (!coachqualificationId) {
+        throw new ApiError(404, "Coach qualification not found");
+    }
+    console.log({ "CoachQualificationId" : coachqualificationId._id});
+    const coachprofileId = await CoachProfile.findOne({userid : userid })
+    if (!coachprofileId) {
+        throw new ApiError(404, "Coach profile not found");
+    }
+    console.log({ "CoachProfileID" :  coachprofileId._id});
 
     // Blog Image Upload
     const blogImagePath = req.files?.BlogImage[0]?.path;
@@ -79,7 +91,10 @@ const Blogpost = asyncHandler(async (req, res) => {
         subcategory: subcategories, // Save as an array
         BlogImage: blogImageFile.secure_url,
         thumbnail: thumbnailFile.secure_url,
-        userId: userid // Ensure the user ID is saved
+        userId: userid, // Ensure the user ID is saved
+        coachqualificationId: coachqualificationId._id,
+        coachprofileId: coachprofileId._id // Ensure the coach profile ID is saved
+
     });
     console.log(newBlog);
 

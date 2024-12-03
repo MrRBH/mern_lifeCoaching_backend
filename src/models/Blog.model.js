@@ -27,6 +27,14 @@ thumbnail :{
 userId:{ 
     type: mongoose.Schema.Types.ObjectId,
     ref : 'User'  // reference to the User model
+},
+coachqualificationId : {
+    type : mongoose.Schema.Types.ObjectId,
+    ref : 'CoachQualification'  // reference to the CoachQualification model
+},
+coachprofileId : { 
+    type : mongoose.Schema.Types.ObjectId,
+    ref : 'CoachProfile'  // reference to the CoachProfile model
 }
 
 
