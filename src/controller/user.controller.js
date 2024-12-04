@@ -172,6 +172,38 @@ const VerifyOtp = asyncHandler(async (req, res, next) => {
         message: "User Verified Successfully"
     }));
 });
+const RegenrateOtp = asyncHandler(async(req,res)=>{
+    const { email } = req.body;
+    console.log(req.body);
+    
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new ApiError(400, 'User not found');
+    }
+
+    // Generate new OTP and set expiry (e.g., 10 minutes)
+    const otp = generateOtp();
+    const otpExpires = Date.now() + 10 * 60 * 1000;
+
+    // Update the user's OTP and expiration
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+
+    await user.save();
+
+    // Send OTP to user's email
+    await sendOtpEmail(email, otp);
+
+    // Send success response
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            user,
+            "OTP regenerated successfully. Please check your email for new OTP.",
+        )
+    );
+})
 
 
 const LoginUser = asyncHandler(async (req, res) => {
@@ -293,6 +325,7 @@ export {
     VerifyOtp,
     LogoutUser,
     changeCurrentPassword,
-    homePage
+    homePage,
+    RegenrateOtp
     
 };

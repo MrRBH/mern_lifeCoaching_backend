@@ -5,6 +5,7 @@ import {
   homePage,
   LoginUser,
   LogoutUser,
+  RegenrateOtp,
   RegisterUser,
   VerifyOtp,
 } from "../controller/user.controller.js";
@@ -39,6 +40,7 @@ router.get(
 router.post("/home", homePage);
 router.post("/register", RegisterUser);
 router.put("/verifyotp", VerifyOtp);
+router.put("/regenrateotp", RegenrateOtp);
 router.post("/login", LoginUser);
 router.post("/logout", verifyJWT, LogoutUser);
 router.post("/change_password", verifyJWT, changeCurrentPassword);

@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { ApiError } from '../utils/ApiError.js';
-import { type } from 'os';
+
 
 const UserSchema = new Schema({
     fullName: {
