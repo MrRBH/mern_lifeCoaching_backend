@@ -24,6 +24,7 @@ const UserSchema = new Schema({
     },
     otp: {
         type: String,
+        unique: false 
     },
     otpExpires: {
         type: Date,
@@ -40,7 +41,7 @@ const UserSchema = new Schema({
         type: String,
         default: null
     }
-} ,{timestamps : true});
+} );
 
 // Hash the password before saving the user
 UserSchema.pre("save", function (next) {
