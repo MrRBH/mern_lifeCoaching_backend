@@ -50,6 +50,9 @@ const RegisterUser = asyncHandler(async (req, res) => {
     if (!fullName || !email || !password) {
         throw new ApiError(400, 'All fields are required');
     }
+    if(password  <  8 ) {
+        throw new ApiError(400, 'Password must be between 8 digits')
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -327,5 +330,4 @@ export {
     changeCurrentPassword,
     homePage,
     RegenrateOtp
-    
 };

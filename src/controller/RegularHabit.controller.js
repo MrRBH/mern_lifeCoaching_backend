@@ -4,7 +4,6 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import OneTimeTaskHabit from "../models/OneTimeTaskHabit.model.js";
-
 import dayjs from "dayjs";
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter.js';
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
@@ -77,9 +76,10 @@ export const RegularCreateHabit = asyncHandler(async (req, res) => {
     console.log({ "Lerner ki ID": lernerProfileId });
 
 
-    // if (!lernerProfile) {
-    //   throw new ApiError(404, "No profile found for this user");
-    // }
+
+    if (!lernerProfileId) {
+      throw new ApiError(404, "No profile found for this user");
+    }
 
     const NewHabit = await CreateHabit.create({
         userid: userId,
