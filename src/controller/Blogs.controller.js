@@ -6,8 +6,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import CoachQualification from "../models/CoachQualification.model.js";
 import CoachProfile from "../models/CoachProfile.model.js";
+import { all } from "axios";
 
-const Blogpost = asyncHandler(async (req, res) => {
+ export const Blogpost = asyncHandler(async (req, res) => {
     const { Title, Description, categories, subcategory } = req.body;
 
     console.log(req.body);
@@ -100,5 +101,44 @@ const Blogpost = asyncHandler(async (req, res) => {
 
     res.status(201).json(new ApiResponse(201, newBlog, "Blog Created successfully"));
 });
+//   show all blogs of the user
+ export const blogList = asyncHandler(async(req,res)=>{
+  const userid = req.user?.id;
+    if (!userid) {
+        throw new ApiError(401, "Unauthorized user");
+    }
+    const AllBlogofuser = await Blog.find();
+    console.log(AllBlogofuser);
+    if (!AllBlogofuser) {
+        return res.json(new ApiError(404, AllBlogofuser, "No blogs found"));
+    }
+    res.json(new ApiResponse(200, AllBlogofuser, "All blogs retrieved successfully"));
 
-export default Blogpost;
+})
+// Route: GET /api/blog/:id
+export const singleBlog = asyncHandler(async (req, res) => {
+    const blogId = req.params.id; 
+  
+    if (!blogId) {
+      throw new ApiError(400, "Blog ID is required");
+    }
+   const userid = req.user?.id;
+    if (!userid) {
+        throw new ApiError(401, "Unauthorized user");
+    }
+
+      const blog = await Blog.findById(blogId); // Fetch blog by ID
+      if (!blog) {
+        return res.json(new ApiResponse(404, null, "Blog not found"));
+      }
+  
+      res.json(new ApiResponse(200, blog, "Blog retrieved successfully"));
+  
+  });
+  
+
+
+
+
+
+
