@@ -216,8 +216,6 @@ const LoginUser = asyncHandler(async (req, res) => {
     if (!email || !password) {
         throw new ApiError(400, 'Email and password are required');
     }
-    console.log(req.body);
-    
 
     // Find user by email
     const user = await User.findOne({ email });
@@ -225,40 +223,32 @@ const LoginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, 'User not found');
     }
 
-    // Check if password is valid
+    // Validate password
     const isPasswordValid = await user.isPasswordCorrect(password);
     if (!isPasswordValid) {
         throw new ApiError(401, 'Invalid password');
     }
 
-    // Generate access token and refresh token using the separate function
+    // Generate tokens
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
-    
-    // Get user data without password and refresh token fields
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-    // Set cookie options
-    const options = {
-        httpOnly: true,
-        // secure: true (use in production for HTTPS)
-    };
-
-    // Send response with cookies and user data
-    if(loggedInUser.isVerified === true){
-
+    // Check if user is verified
+    if (user.isVerified === true) {
         return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
-        .json(
-            new ApiResponse(
-                200,
-                { user: loggedInUser, accessToken, refreshToken },
-                "User logged in successfully"
-            )
-        );
-    }else{
-        throw new ApiError(401, 'User not verified');
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    { 
+                        user: { id: user._id, email: user.email }, 
+                        accessToken, 
+                        refreshToken 
+                    },
+                    "User logged in successfully"
+                )
+            );
+    } else {
+        throw new ApiError(401, "User not verified");
     }
 });
 
@@ -266,30 +256,30 @@ const LoginUser = asyncHandler(async (req, res) => {
 
 
 
-const LogoutUser = asyncHandler(async(req, res) => {
-    await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $unset: {
-                refreshToken: 1 // this removes the field from document
-            }
-        },
-        {
-            new: true
-        }
-    )
 
-    const options = {
-        httpOnly: true,
-        secure: true
+const LogoutUser = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) {
+        throw new ApiError(401, "Unauthenticated user");
     }
 
+    // Clear tokens from database
+    await User.findByIdAndUpdate(
+        userId,
+        {
+            $unset: {
+                refreshToken: 1, // Remove refresh token
+                accessToken: 1, // Remove access token
+            },
+        },
+        { new: true }
+    );
+
     return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged Out"))
-})
+        .status(200)
+        .json(new ApiResponse(200, {}, "User logged out successfully. Please clear Authorization header."));
+});
+
 
 const changeCurrentPassword = asyncHandler(async(req, res) => {
     const {oldPassword, newPassword} = req.body
