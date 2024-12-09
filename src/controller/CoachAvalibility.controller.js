@@ -13,6 +13,7 @@ export const coachAvailability = asyncHandler(async (req,res) => {
         EndTime,
         FifteenMinutesPrice,
         ThirteenthMinutesPrice,
+        userid
     } = req.body;
     console.log(req.body);
     
@@ -55,6 +56,9 @@ export const coachAvailability = asyncHandler(async (req,res) => {
     const userId = req.user?.id
     if (!userId) {
         throw new ApiError(401,"Unauthorized user");
+    }
+    if(userId!== userid){
+        throw new ApiError(403, "You are not authorized to perform this action")
     }
 
     const CoachQualificationId =  await CoachQualification.findOne({userid : userId})

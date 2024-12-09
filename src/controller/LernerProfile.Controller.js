@@ -20,16 +20,16 @@ const validImproveValues = [
   
   const lernerProfile = asyncHandler(async (req, res) => {
   
-        let { improve, name, Country, Language, Address } = req.body;
+        let { improve, name, Country, Language, Address ,  userid } = req.body;
       console.log(req.body);
       
           
-        // if (!Array.isArray(improve)) {
+        if (!Array.isArray(improve)) {
          
-        //   } else {
-        //     // If it's an array, clean up each value
-        //     improve = improve.map(val => val.trim().replace(/^"|"$/g, ''));  // Trim and remove quotes
-        //   }
+          } else {
+            // If it's an array, clean up each value
+            improve = improve.map(val => val.trim().replace(/^"|"$/g, ''));  // Trim and remove quotes
+          }
 
         if (!Array.isArray(improve)) {
           throw new ApiError(400, "improve must be arrays of strings");
@@ -57,7 +57,12 @@ const validImproveValues = [
         if (!userId) {
           throw new ApiError(401, "Unauthorized user");
         }
+
         console.log(userId);
+
+        if(userId !== userid){
+          throw new ApiError(403, "You are not authorized to perform this action.");
+        }
         
       
         // Handle image path and upload
@@ -94,7 +99,7 @@ const validImproveValues = [
         res.status(201).json(new ApiResponse(201, userlernerProfile, "Profile created successfully"));
       })
   export const EditProfile = asyncHandler(async (req, res) => {
-    const { name, Address, Language, Country } = req.body;
+    const { name, Address, Language, Country , userid } = req.body;
   
     // Ensure all required fields are provided
     if (!name || !Address || !Country || !Language) {
@@ -104,6 +109,9 @@ const validImproveValues = [
     const userId = req.user?.id;  // Get user ID from the authenticated request
     if (!userId) {
       throw new ApiError(401, "Unauthorized user");
+    }
+    if(userId === userid){
+      throw new ApiError(403, "You are not authorized to perform this action");
     }
   
     // Get the profile image path from the uploaded file

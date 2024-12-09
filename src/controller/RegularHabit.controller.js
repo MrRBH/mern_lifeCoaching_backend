@@ -17,7 +17,7 @@ dayjs.extend(customParseFormat);
 
 
 export const RegularCreateHabit = asyncHandler(async (req, res) => {
-    let { HabitName, Frequency, RepeatDays, TimeInADay, Amount, DATE, Reminder } = req.body
+    let { HabitName, Frequency, RepeatDays, TimeInADay, Amount, DATE, Reminder , userid } = req.body
     console.log(req.body);
 
     if (!HabitName || !Frequency || !TimeInADay) {
@@ -26,6 +26,9 @@ export const RegularCreateHabit = asyncHandler(async (req, res) => {
     const userId = req.user?.id
     if (!userId) {
         throw new ApiError(401, "Unauthorized user")
+    }
+    if(userId !== userid){
+        throw new ApiError(403, "You are not authorized to perform this action")
     }
     console.log({ "Logged UserId": userId });
 
@@ -101,7 +104,7 @@ export const RegularCreateHabit = asyncHandler(async (req, res) => {
 
 
 export const createOneTimeTask = asyncHandler(async (req, res) => {
-    const { TaskName, DateForTask, TimeForTask } = req.body;
+    const { TaskName, DateForTask, TimeForTask , userid  } = req.body;
 
     // Validate required fields
     if (!TaskName || !DateForTask || !TimeForTask) {
@@ -114,6 +117,11 @@ export const createOneTimeTask = asyncHandler(async (req, res) => {
     }
     console.log(userId);
 
+
+    if(userId!== userid){
+        throw new ApiError(403, "You are not authorized to perform this action")
+    }
+    
     const lernerProfileId = await LernerProfile.findOne({ owner: userId })
     if (!lernerProfileId) {
         throw new ApiError(404, "No profile found for this user");

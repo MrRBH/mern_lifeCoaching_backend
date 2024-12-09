@@ -17,7 +17,7 @@ import mongoose, { Schema } from "mongoose";
     type : Number,
     required : true
   },
-  userid:{
+  userId:{
     type:Schema.Types.ObjectId,
     ref : 'User'
   },

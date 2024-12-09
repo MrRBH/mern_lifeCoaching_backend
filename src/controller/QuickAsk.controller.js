@@ -11,11 +11,15 @@ export const Quickask = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Unauthorized user");
     }
 
-    let { AwakeQuestions, SleepQuestions } = req.body;
+    let { AwakeQuestions, SleepQuestions , userid   } = req.body;
 
     // Validate input data
     if (!AwakeQuestions || !SleepQuestions) {
         throw new ApiError(400, "AwakeQuestions and SleepQuestions are required");
+    }
+
+    if(userId !== userid){
+        throw new ApiError(404, "You are not authorized to perform this action");
     }
 
     // Convert string to array if necessary and ensure proper trimming

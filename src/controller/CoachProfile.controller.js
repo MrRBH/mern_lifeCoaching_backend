@@ -6,14 +6,19 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudniary.js";
 
 export const CoachProfileQualification = asyncHandler(async (req, res) => {
+  const { QualificationCollage, QualificationDegree, QualificationDegreeContry, QualificationYear, userid } = req.body;
 
-  const { QualificationCollage, QualificationDegree, QualificationDegreeContry, QualificationYear } = req.body;
-  // console.log(req.body);
+  console.log("Request Body:", req.body);
 
   const userId = req.user?._id;
 
   if (!userId) {
     throw new ApiError(401, "Unauthorized user");
+  }
+  console.log("Authenticated User ID:", userId);
+
+  if (userId.toString() !== userid) {
+    throw new ApiError(403, "You are not authorized to perform this action");
   }
 
   if (!QualificationCollage || !QualificationDegree || !QualificationDegreeContry || !QualificationYear) {
@@ -25,11 +30,16 @@ export const CoachProfileQualification = asyncHandler(async (req, res) => {
     QualificationDegree,
     QualificationDegreeContry,
     QualificationYear,
-    userid: userId
-  })
+    userId: userId,
+  });
 
-  res.status(201).json(new ApiResponse(201, coachProfileQualificationDetail, "Qualification added successfully"))
-})
+  res
+    .status(201)
+    .json(
+      new ApiResponse(201, coachProfileQualificationDetail, "Qualification added successfully")
+    );
+});
+
 // export const CoachProfileDetails = asyncHandler(async (req, res) => {
 
 //      let {
@@ -173,6 +183,7 @@ export const CoachProfileDetails = asyncHandler(async (req, res) => {
     ListOfDegreeYouEarn,
     AeraOFStudyOfReleventField,
     EstimateProfessionalWorkingHours,
+    userid
   } = req.body;
 
   console.log({Body : req.body});
@@ -182,10 +193,10 @@ export const CoachProfileDetails = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Unauthorized user");
   }
   console.log({"Logged User" : userId});
-  
+  if(userId.toString() !== userid ) throw new ApiError(403 , "You are not authorized to perform this action")  
 
   // Retrieve the CoachQualification for the logged-in user
-  const qualification = await CoachQualification.findOne({ userid: userId });
+  const qualification = await CoachQualification.findOne({ userId: userId });
 
    console.log({Qualification : qualification });
 
@@ -287,13 +298,14 @@ export const CoachProfileDetails = asyncHandler(async (req, res) => {
 export const UpdateCoachProfile = asyncHandler(async (req, res) => {
  try {
   const {
-   FirstName , LastName, PrimaryPostelAddress,country,YoutubeUrl,InstagramUrl,FacebookUrl,biography
+   FirstName , LastName, PrimaryPostelAddress,country,YoutubeUrl,InstagramUrl,FacebookUrl,biography,userid
   } = req.body
  console.log({Body :req.body});
  const userId  = req.user?.id
  if(!userId) {
   throw new ApiError(401,"Unauthenticated user")
  }
+ if(userId!== userid ) throw new ApiError(403,"You are not authorized to perform this action")
  
  // coach CoachCoverImage uplaod to server or cloudinary
  const CoachCoverImagepath = req.files?.CoachCoverImage[0]?.path;

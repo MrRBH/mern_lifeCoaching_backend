@@ -9,7 +9,7 @@ import CoachProfile from "../models/CoachProfile.model.js";
 import mongoose from "mongoose";
 
  export const Blogpost = asyncHandler(async (req, res) => {
-    const { Title, Description, categories, subcategory } = req.body;
+    const { Title, Description, categories, subcategory , userid } = req.body;
 
     console.log(req.body);
 
@@ -37,10 +37,12 @@ import mongoose from "mongoose";
     }
 
     // UserID fetch
-    const userid = req.user?.id;
-    if (!userid) {
+    const userId = req.user?.id;
+    if (!userId) {
         throw new ApiError(401, "Unauthorized user");
     }
+    if(userId === userid)  throw new ApiError(403 , "You are not authorized to perform this action")  
+
     const coachqualificationId = await CoachQualification.findOne({ userid: userid})
     if (!coachqualificationId) {
         throw new ApiError(404, "Coach qualification not found");
@@ -102,12 +104,13 @@ import mongoose from "mongoose";
     res.status(201).json(new ApiResponse(201, newBlog, "Blog Created successfully"));
 });
 export const EditBlog = asyncHandler(async (req, res) => {
-    const { id: blogId, Title, Description, categories, subcategory } = req.body;
+    const { id: blogId, Title, Description, categories, subcategory , userid } = req.body;
 
     const userId = req.user?.id;
     if (!userId) {
         throw new ApiError(401, "Unauthorized user");
     }
+    if(userId!== userid)  throw new ApiError(403, "You are not authorized to perform this action")
 
     // Validate Blog ID
     if (!blogId) {
@@ -186,8 +189,8 @@ export const EditBlog = asyncHandler(async (req, res) => {
 
 //   show all blogs of the user
  export const blogList = asyncHandler(async(req,res)=>{
-  const userid = req.user?.id;
-    if (!userid) {
+  const userId = req.user?.id;
+    if (!userId) {
         throw new ApiError(401, "Unauthorized user");
     }
     const AllBlogofuser = await Blog.find();
@@ -200,16 +203,17 @@ export const EditBlog = asyncHandler(async (req, res) => {
 })
 // Route: GET /api/blog
 export const singleBlog = asyncHandler(async (req, res) => {
-    const { id: blogId } = req.body;
+    const { userid , id:blogId } = req.body;
     console.log(req.body);
   
     if (!blogId) {
       throw new ApiError(400, "Blog ID is required");
     }
-   const userid = req.user?.id;
-    if (!userid) {
+   const userId = req.user?.id;
+    if (!userId) {
         throw new ApiError(401, "Unauthorized user");
     }
+    if(userId !== userid)  throw new ApiError(403 , "You are not authorized to perform this action")  
 
       const blog = await Blog.findById(blogId); // Fetch blog by ID
       if (!blog) {
@@ -220,15 +224,16 @@ export const singleBlog = asyncHandler(async (req, res) => {
   
   });  
  export const DeleteBlog  = asyncHandler(async (req,res)=>{
-    const { id :blogId} = req.body
+    const { id :blogId , userid} = req.body
     console.log(blogId);
     if (!blogId) {
         throw new ApiError(400, "Blog ID is required");
     }
-    const userid = req.user?.id;
-    if (!userid) {
+    const userId = req.user?.id;
+    if (!userId) {
         throw new ApiError(401, "Unauthorized user");
     }
+    if(userId!== userid)  throw new ApiError(403 , "You are not authorized to perform this action")
     const blog = await Blog.findByIdAndDelete(blogId);
     // console.log(blog);
     if (!blog) {
