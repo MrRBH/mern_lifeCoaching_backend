@@ -1,5 +1,5 @@
 import{ Router } from "express"
-import { CoachProfileDetails, UpdateCoachProfile } from "../controller/CoachProfile.controller.js"
+import { CoachProfileDetails, GetCoachProfile, UpdateCoachProfile } from "../controller/CoachProfile.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 import { upload } from "../middlewares/multer.middleware.js"
 import { coachAvailability } from "../controller/CoachAvalibility.controller.js"
@@ -14,6 +14,8 @@ router.put("/editCoahcProfile", verifyJWT , upload.fields([
 
     //coach avalibilities routes
     router.post("/coachAvailability" , verifyJWT, coachAvailability) 
+
+    router.get("/getCoachProfile" , verifyJWT , GetCoachProfile)
 
 
 export default router

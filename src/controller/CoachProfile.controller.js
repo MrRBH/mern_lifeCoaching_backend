@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudniary.js";
 
+
 export const CoachProfileQualification = asyncHandler(async (req, res) => {
   const { QualificationCollage, QualificationDegree, QualificationDegreeContry, QualificationYear, userid } = req.body;
 
@@ -366,4 +367,29 @@ export const UpdateCoachProfile = asyncHandler(async (req, res) => {
 
 
 
+})
+
+export const GetCoachProfile = asyncHandler(async(req,res)=>{
+  
+    const {userid } = req.body
+    console.log(req.body);
+    
+    if(!userid){
+      throw new ApiError(400,"No userid provided")
+    }
+    console.log(userid);
+    
+    
+    console.log({Body : req.body});
+    const userId  = req.user?.id
+    if(!userId) {
+      throw new ApiError(401,"Unauthenticated user")
+    }
+    if(userId!== userid ) throw new ApiError(403,"You are not authorized to perform this action")
+    const Coachprofile = await CoachProfile.find()
+    if(!Coachprofile){
+      throw new ApiError(404,"No coach profile found")
+    }
+    res.json(new ApiResponse(200,Coachprofile,"coachprofile fetched"))
+  
 })
