@@ -102,6 +102,28 @@ export const RegularCreateHabit = asyncHandler(async (req, res) => {
 
 })
 
+export const ShowAllRegularHabit = asyncHandler(async (req, res)=>{
+    const userid = req.body
+    if(!userid){
+        throw new ApiError(400,"No userid provided")
+    }
+    console.log(req.body);
+    const userId = req.user?.id;
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized user");
+    }
+    if(userId!== userid){
+        throw new ApiError(403, "You are not authorized to perform this action")
+    }
+
+    console.log(userId);
+
+    const AllRegularHabit = await CreateHabit.find({ userid: userId });
+    console.log(AllRegularHabit);
+
+    res.json(new ApiResponse(200, AllRegularHabit, "All Regular Habits retrieved successfully"))
+})
+
 
 export const createOneTimeTask = asyncHandler(async (req, res) => {
     const { TaskName, DateForTask, TimeForTask , userid  } = req.body;
@@ -158,3 +180,26 @@ export const createOneTimeTask = asyncHandler(async (req, res) => {
 
     res.status(201).json(new ApiResponse(201, newTask, "Task created successfully"));
 });
+ 
+export const showAllOneTimeTask = asyncHandler(async (req, res) => {
+    const userid = req.body
+    if(!userid){
+        throw new ApiError(400,"No userid provided")
+    }
+    console.log(req.body);
+    const userId = req.user?.id;
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized user");
+    }
+    if(userId!== userid){
+        throw new ApiError(403, "You are not authorized to perform this action")
+    }
+
+    console.log(userId);
+
+    const allTasks = await OneTimeTaskHabit.find({ userId: userId });
+    console.log(allTasks);
+
+    res.json(new ApiResponse(200, allTasks, "All One Time Tasks retrieved successfully"))
+})
+
