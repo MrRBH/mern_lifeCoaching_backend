@@ -29,6 +29,8 @@ passport.use(
 				isVerified: true,
                 otpExpires: new Date(Date.now() + 300000) // 5 minutes
             })
+            console.log();
+            
 			const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(newUser.id);
 
 			

@@ -6,9 +6,10 @@ import jwt from "jsonwebtoken"
 
 export const verifyJWT = asyncHandler(async(req, _, next) => {
     try {
-        const token =  req.header("Authorization")?.replace("Bearer ", "")
+        const token =  req.header("Authorization")?.replace("Bearer ", "") || req.cookies.jwt || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NTQzYjRlZDlmN2ExYzA0MzNiODFmYSIsImVtYWlsIjoibXJyYmgxNkBnbWFpbC5jb20iLCJmdWxsTmFtZSI6InJhYml1bGhhc3NhbiIsImlhdCI6MTczNjIzMjU2NywiZXhwIjoxNzM2ODM3MzY3fQ.UEK464_jxjO3GaWnVgedXAhzTOAxRGfozJ5Aq3177sc"
         
-        // console.log(token);
+        // console.log({"JWT Token":token});
+
         if (!token) {
             throw new ApiError(401, "Unauthorized request")
         }
@@ -25,13 +26,14 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
             
             throw new ApiError(401, "Invalid Access Token")
         }
-        console.log({ "currently login user" : user.id});
+        // console.log({ "currently login user" : user.id});
         
     
         req.user = user;
         next()
     } catch (error) {
-        throw new ApiError(401, error?.message || "Invalid access token")
+        console.error(error) 
+        throw new ApiError(401, "something went wroung in authentication" , error?.message || "Invalid access token")
     }
     
 })

@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
- const BlogSchema  =  mongoose.Schema({
+ const BlogSchema  =  mongoose.Schema({  
 Title :{
     type : String,
     required : true
 },
-Description :{
+Description :{ 
 type : String
 } ,
 categories :{

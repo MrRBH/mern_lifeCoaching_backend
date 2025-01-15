@@ -243,7 +243,7 @@ const LoginUser = asyncHandler(async (req, res) => {
                         user: { id: user._id, email: user.email }, 
                         accessToken, 
                         refreshToken 
-                    },
+                    }, 
                     "User logged in successfully"
                 )
             );

@@ -23,7 +23,7 @@ router.get("/login/success", (req, res) => {
 });
 
 router.get("/login/failed", (req, res) => {
-  res.status(401).json({ error: true, message: "Login failed" });
+  res.status(401).json({ error: true, message: "Login failed" }); 
 });
 
 router.get("/google", passport.authenticate("google", { scope: ["email", "profile"] }));
@@ -37,7 +37,7 @@ router.get(
 );
 
 // User Routes
-router.post("/home", homePage);
+router.post("/home", homePage); 
 router.post("/register", RegisterUser);
 router.put("/verifyotp", VerifyOtp);
 router.put("/regenrateotp", RegenrateOtp);

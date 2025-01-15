@@ -203,7 +203,7 @@ export const EditBlog = asyncHandler(async (req, res) => {
 })
 // Route: GET /api/blog
 export const singleBlog = asyncHandler(async (req, res) => {
-    const { userid , id:blogId } = req.body;
+    const { userid , blogId } = req.body;
     console.log(req.body);
   
     if (!blogId) {
@@ -213,6 +213,8 @@ export const singleBlog = asyncHandler(async (req, res) => {
     if (!userId) {
         throw new ApiError(401, "Unauthorized user");
     }
+    console.log(userId);
+    
     if(userId !== userid)  throw new ApiError(403 , "You are not authorized to perform this action")  
 
       const blog = await Blog.findById(blogId); // Fetch blog by ID

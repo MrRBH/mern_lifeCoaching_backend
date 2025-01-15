@@ -58,7 +58,7 @@ UserSchema.pre("save", function (next) {
     });
 });
 
-// Method to verify password
+// Method to verify password 
 UserSchema.methods.isPasswordCorrect = function (candidatePassword) {
     const hashedCandidatePassword = crypto.scryptSync(candidatePassword, this.salt, 64).toString('hex');
     return this.password === hashedCandidatePassword;
