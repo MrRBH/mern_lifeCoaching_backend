@@ -84,7 +84,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
         )
     );
 });
-// const VerifyOtp = asyncHandler(async (req, res, next) => {
+
 //     const { otp } = req.body;
 //     console.log(req.body);
     
@@ -152,12 +152,7 @@ const VerifyOtp = asyncHandler(async (req, res, next) => {
         throw new ApiError(400, 'OTP has expired');
     }
 
-    // Clear OTP and mark user as verified
-    // user.otp = null;
-    // user.otpExpires = null;
-    // user.isVerified = true;
-
-    // await user.save();
+ 
 
     const verifyOtp = await User.findOneAndUpdate(
         { _id: user._id },  // Filter by the unique user ID

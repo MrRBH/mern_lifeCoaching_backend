@@ -9,20 +9,6 @@ dotenv.config({ path: './.env' });
 // const app = express();
 const port = process.env.PORT || 8100;
 
-// Middleware to parse JSON request bodies
-
-
-// io.on("connection", (socket)=>{
-//     console.log(`client connected : ${socket.id}`)
-//     console.log("this is from connection event");
-    
-  
-//     socket.on("disconnect", () => {
-//       console.log(`client disconnected : ${socket.id}`)
-//     });
-//   })
-
-
 connectDB()
     .then(() => {
         server.listen(port, () => {
