@@ -9,6 +9,8 @@ dotenv.config({ path: './.env' });
 // const app = express();
 const port = process.env.PORT || 8100;
 
+const port2 = process.env.PORT || 8100;
+
 // Middleware to parse JSON request bodies
 
 
