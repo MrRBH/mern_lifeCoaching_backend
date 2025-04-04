@@ -8,6 +8,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudniary.js";
 import {io} from "../app.js"
 import path, { join }  from "path";
+import Block from "../models/Block.model.js";
 
  export const GetAllUserForaChat = asyncHandler(async (req,res)=>{
  try {
@@ -70,11 +71,11 @@ export const SendMessage = asyncHandler(async (req, res) => {
   try {
     // res.sendFile(path.resolve("./public/index.html"));
     // Extract data from the request body
-    const { message,  receiverId } = req.body;
+    const { message, receiverId } = req.body;
     console.log("Received message data:", req.body);
 
     // Get authenticated userId from the request (e.g., via JWT or session)
-    const userId = req.user?.id; 
+    const userId = req.user?.id;
     console.log("Authenticated User ID:", userId);
 
     // Check if the user is authenticated
@@ -101,9 +102,24 @@ export const SendMessage = asyncHandler(async (req, res) => {
           uploadedImagePath = await uploadOnCloudinary(imagePath); // Assuming this uploads to Cloudinary
           console.log("Image uploaded successfully:", uploadedImagePath);
         } catch (err) {
-          throw new ApiError(500, "Failed to upload image to Cloudinary", err.message);
+          throw new ApiError(
+            500,
+            "Failed to upload image to Cloudinary",
+            err.message
+          );
         }
       }
+    }
+    // Check if sender is blocked by receiver
+    const isBlocked = await Block.findOne({
+      userId: receiverId,
+      blockedUserId: userId,
+    });
+    if (isBlocked) {
+      throw new ApiError(
+        403,
+        "You are blocked from sending messages to this user"
+      );
     }
 
     // Save the chat message to the database
@@ -114,33 +130,77 @@ export const SendMessage = asyncHandler(async (req, res) => {
       image: uploadedImagePath?.secure_url || null, // Save image URL if it exists
     });
     console.log(chat);
-    
 
     // Emit the message to the receiver using Socket.io
     const receiverSocketId = getReceiverSocketId(receiverId); // Get the receiver's socket ID
-    console.log({"receiverSocketId" :receiverSocketId});
-    
+    console.log({ receiverSocketId: receiverSocketId });
 
     if (receiverSocketId) {
       // Emit chat message to receiver
-      io.to(receiverSocketId).emit("chat_message", { 
+      io.to(receiverSocketId).emit("chat_message", {
         senderId: userId,
         receiverId: receiverId,
         message: message,
         image: uploadedImagePath?.secure_url || null,
       });
-      console.log("Message sent to receiver via Socket.io:", message); 
+      console.log("Message sent to receiver via Socket.io:", message);
     } else {
       console.log("Receiver is not connected");
-    } 
+    }
 
     // Respond with a success message
-    res.status(201).json(new ApiResponse(201, chat, "Message sent successfully"));
+    res
+      .status(201)
+      .json(new ApiResponse(201, chat, "Message sent successfully"));
   } catch (error) {
     console.error("Error while sending message:", error);
     res.status(error.status || 500).json(new ApiError(error.status || 500, "Internal server error", error.message));
   }
 });
+export const BlockUserHandle = asyncHandler(async (req, res) => {
+  try {
+    const { userId, blockedUserId } = req.body;
+
+    if (!userId || !blockedUserId) {
+      throw new ApiError(400, "userId and blockedUserId are required");
+    }
+
+    // Create or update the Block entry
+    const block = await Block.findOneAndUpdate(
+      { userId, blockedUserId },
+      { $setOnInsert: { userId, blockedUserId } },
+      { new: true, upsert: true }
+    );
+
+    // Block the chat between these two users
+    const blockedChat = await Chat.updateMany(
+      {
+        $or: [
+          { senderId: userId, receiverId: blockedUserId },
+          { senderId: blockedUserId, receiverId: userId },
+        ],
+      },
+      { isblocked: true }
+    );
+    console.log("Blocked chat:", blockedChat);
+
+    res
+      .status(201)
+      .json(new ApiResponse(201, {block ,blockedChat}, "User blocked successfully"));
+  } catch (error) {
+    console.error("Error while blocking user:", error);
+    res
+      .status(error.status || 500)
+      .json(
+        new ApiError(
+          error.status || 500,
+          "Internal server error",
+          error.message
+        )
+      );
+  }
+});
+
   
 export const chathandle = asyncHandler(async ( req,res)=>{
   res.sendFile( "/Users/RBH/mern_lifeCoaching_backend/src/public/index.html" );

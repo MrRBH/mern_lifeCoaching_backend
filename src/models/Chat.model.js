@@ -3,7 +3,8 @@ const ChatSchema = new Schema({
     senderId: { type: Schema.Types.ObjectId, ref: "User",required: true},
     receiverId: { type: Schema.Types.ObjectId, ref: "User", required: true},
     message: { type: String, required: true },
-    Image : {type: String}
+    Image : {type: String},
+    isblocked : { type: Boolean, default: false }
     
 
 }, {timestamps: true});
