@@ -201,6 +201,54 @@ export const BlockUserHandle = asyncHandler(async (req, res) => {
   }
 });
 
+export const UnblockUserHandle = asyncHandler(async (req, res) => {
+  try {
+    const { userId, blockedUserId } = req.body;
+
+    if (!userId || !blockedUserId) {
+      throw new ApiError(400, "userId and blockedUserId are required");
+    }
+
+    // Delete the Block entry
+    const unblock = await Block.findOneAndDelete({
+      userId,
+      blockedUserId,
+    });
+
+    // Unblock the chat between these two users
+    const unblockedChat = await Chat.updateMany(
+      {
+        $or: [
+          { senderId: userId, receiverId: blockedUserId },
+          { senderId: blockedUserId, receiverId: userId },
+        ],
+      },
+      { isblocked: false }
+    );
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { unblock, unblockedChat },
+          "User unblocked successfully"
+        )
+      );
+  } catch (error) {
+    console.error("Error while unblocking user:", error);
+    res
+      .status(error.status || 500)
+      .json(
+        new ApiError(
+          error.status || 500,
+          "Internal server error",
+          error.message
+        )
+      );
+  }
+});
+
   
 export const chathandle = asyncHandler(async ( req,res)=>{
   res.sendFile( "/Users/RBH/mern_lifeCoaching_backend/src/public/index.html" );
