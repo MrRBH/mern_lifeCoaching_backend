@@ -2,7 +2,7 @@ import { Router } from "express" ;
 import { Blogpost ,DeleteBlog,EditBlog,blogList, singleBlog } from "../controller/Blogs.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { paginationMiddleware } from "../middlewares/pagination.middleware.js";
+
   
  const router  =  Router()
 
@@ -12,4 +12,4 @@ import { paginationMiddleware } from "../middlewares/pagination.middleware.js";
  router.get("/blog", verifyJWT , singleBlog) 
  router.delete("/DeleteBlog", verifyJWT , DeleteBlog)
 
- export default router ;
+ export default router ; 
