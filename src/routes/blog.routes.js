@@ -2,6 +2,7 @@ import { Router } from "express" ;
 import { Blogpost ,DeleteBlog,EditBlog,blogList, singleBlog } from "../controller/Blogs.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { paginationMiddleware } from "../middlewares/pagination.middleware.js";
   
  const router  =  Router()
 

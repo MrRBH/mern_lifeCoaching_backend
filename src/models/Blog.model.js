@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
  const BlogSchema  =  mongoose.Schema({  
 Title :{
@@ -39,6 +40,7 @@ coachprofileId : {
 
 
 },{timestamps : true})
+BlogSchema.plugin(mongoosePaginate);
 
 const Blog = mongoose.model('Blog',BlogSchema)
 

@@ -188,19 +188,38 @@ export const EditBlog = asyncHandler(async (req, res) => {
 });
 
 //   show all blogs of the user
- export const blogList = asyncHandler(async(req,res)=>{
-  const userId = req.user?.id;
-    if (!userId) {
-        throw new ApiError(401, "Unauthorized user");
-    }
-    const AllBlogofuser = await Blog.find();
-    console.log(AllBlogofuser);
-    if (!AllBlogofuser) {
-        return res.json(new ApiError(404, AllBlogofuser, "No blogs found"));
-    }
-    res.json(new ApiResponse(200, AllBlogofuser, "All blogs retrieved successfully"));
+ export const blogList = asyncHandler(async (req, res) => {
+   const userId = req.user?.id;
+   if (!userId) {
+     throw new ApiError(401, "Unauthorized user");
+   }
 
-})
+   const limit = parseInt(req.query.limit) || 10;
+   const lastCreatedAt = req.query.lastCreatedAt;
+
+   const query = {}; // all blogs
+
+   if (lastCreatedAt) {
+     query.createdAt = { $lt: new Date(lastCreatedAt) };
+   }
+
+   const blogs = await Blog.find(query)
+     .sort({ createdAt: -1 }) // newest first
+     .limit(limit);
+
+   if (!blogs || blogs.length === 0) {
+     return res.json(new ApiError(404, blogs, "No blogs found"));
+   }
+
+   const hasMore = blogs.length === limit;
+
+   res
+     .status(200)
+     .json(
+       new ApiResponse(200, { blogs, hasMore }, "Blogs retrieved successfully")
+     );
+ });
+
 // Route: GET /api/blog
 export const singleBlog = asyncHandler(async (req, res) => {
     const { userid , blogId } = req.body;
