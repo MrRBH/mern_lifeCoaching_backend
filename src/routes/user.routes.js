@@ -2,11 +2,13 @@ import { Router } from "express";
 import passport from "passport";
 import {
   changeCurrentPassword,
+  forgotPassword,
   homePage,
   LoginUser,
   LogoutUser,
   RegenrateOtp,
   RegisterUser,
+  resetPassword,
   VerifyOtp,
 } from "../controller/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -44,5 +46,7 @@ router.put("/regenrateotp", RegenrateOtp);
 router.post("/login", LoginUser);
 router.post("/logout", verifyJWT, LogoutUser);
 router.post("/change_password", verifyJWT, changeCurrentPassword);
+router.post("/forgot_password",forgotPassword )
+router.post ("/reset_password", resetPassword)
 
 export default router;

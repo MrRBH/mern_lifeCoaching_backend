@@ -166,9 +166,7 @@ const VerifyOtp = asyncHandler(async (req, res, next) => {
     console.log({ "Verify User Data": verifyOtp });
      
 
-    return res.status(200).json(new ApiResponse(200, verifyOtp, {
-        message: "User Verified Successfully"
-    }));
+    return res.status(200).json(new ApiResponse(200, {verifyOtp}, "User Verified Successfully" ));
 });
 const RegenrateOtp = asyncHandler(async(req,res)=>{
     const { email } = req.body;
@@ -197,7 +195,7 @@ const RegenrateOtp = asyncHandler(async(req,res)=>{
     res.status(200).json(
         new ApiResponse(
             200,
-            user,
+            {userId : user._id},
             "OTP regenerated successfully. Please check your email for new OTP.",
         )
     );
@@ -305,14 +303,97 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Password changed successfully"))
 })
+ const forgotPassword = asyncHandler(async (req, res) => {
+   const { email } = req.body;
+   console.log("Forgot Password Request:", req.body);
+
+   if (!email) {
+     throw new ApiError(400, "Email is required");
+   }
+
+   const user = await User.findOne({ email });
+   if (!user) {
+     throw new ApiError(404, "User not found");
+   }
+
+   const otp = generateOtp(); // You should have this function already
+    console.log("Generated OTP:", otp);
+   const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+   const sendOtpResult = await sendOtpEmail(email, otp);
+   // Check if OTP was sent successfully
+//    if (!sendOtpResult) {
+//      console.error("Error sending OTP:", sendOtpResult);
+//      throw new ApiError(500, "Failed to send OTP");
+//    }
+//    console.log("Send OTP Result:", sendOtpResult);
+
+//    if (!sendOtpResult) {
+//      throw new ApiError(400, "Unable to send OTP");
+//    }
+
+   // Save OTP and Expiry in user record
+   user.otp = otp;
+   user.otpExpires = otpExpires;
+   await user.save({ validateBeforeSave: false });
+
+   res
+     .status(200)
+     .json(
+       new ApiResponse(
+         200,
+         {sendOtpEmail , otp},
+         "OTP sent successfully. Please check your email for OTP verification."
+       )
+     );
+ });
+
+const resetPassword = asyncHandler(async (req,res)=>{
+    const {newPassword, confirmPassword , userId} = req.body
+     console.log(req.body);
+     if(!newPassword || !confirmPassword) {
+        throw new ApiError(400, "All fields are required")
+     }
+        if(newPassword !== confirmPassword) {
+            throw new ApiError(400, "Password and confirm password do not match")
+        }
+        const user = await User.findOneAndUpdate({userId : userId})
+        if(!user) {
+            throw new ApiError(400, "User not found")
+        }
+        if (!user.isVerified) {
+          throw new ApiError(
+            403,
+            "OTP not verified. Please verify OTP before resetting password."
+          );
+        }
+        const currentpassword =  user.password = newPassword
+        console.log(currentpassword);
+        user.isVerified = false
+        await user.save({validateBeforeSave: false})
+        res
+          .status(200)
+          .json(
+            new ApiResponse(
+              200,
+              { currentpassword },
+              "Password reset successfully. Please login with your new password."
+            )
+          );
+     
+})
+
+
 
 export {
-    generateAccessAndRefereshTokens,
-    RegisterUser,
-    LoginUser,
-    VerifyOtp,
-    LogoutUser,
-    changeCurrentPassword,
-    homePage,
-    RegenrateOtp
+  generateAccessAndRefereshTokens,
+  RegisterUser,
+  LoginUser,
+  VerifyOtp,
+  LogoutUser,
+  changeCurrentPassword,
+  homePage,
+  RegenrateOtp,
+  forgotPassword,
+  resetPassword,
 };
